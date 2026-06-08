@@ -1,0 +1,554 @@
+{
+  "nodes": [
+    {
+      "key": "communication-agent",
+      "attributes": {
+        "type": "graph-node",
+        "label": "communication-agent"
+      }
+    },
+    {
+      "key": "WhatsApp",
+      "attributes": {
+        "type": "graph-node",
+        "label": "WhatsApp"
+      }
+    },
+    {
+      "key": "+56912345678",
+      "attributes": {
+        "type": "graph-node",
+        "label": "+56912345678"
+      }
+    },
+    {
+      "key": "Alertas de Teams",
+      "attributes": {
+        "type": "graph-node",
+        "label": "Alertas de Teams"
+      }
+    },
+    {
+      "key": "Juan Pérez",
+      "attributes": {
+        "type": "graph-node",
+        "label": "Juan Pérez"
+      }
+    },
+    {
+      "key": "maria.garcia@empresa.com",
+      "attributes": {
+        "type": "graph-node",
+        "label": "maria.garcia@empresa.com"
+      }
+    },
+    {
+      "key": "email-agent",
+      "attributes": {
+        "type": "unknown",
+        "label": "email-agent"
+      }
+    },
+    {
+      "key": "sistemas@empresa.com",
+      "attributes": {
+        "type": "graph-node",
+        "label": "sistemas@empresa.com"
+      }
+    },
+    {
+      "key": "juan.perez@cliente.com",
+      "attributes": {
+        "type": "graph-node",
+        "label": "juan.perez@cliente.com"
+      }
+    },
+    {
+      "key": "libreta de direcciones/agenda de contactos guardados",
+      "attributes": {
+        "type": "graph-node",
+        "label": "libreta de direcciones/agenda de contactos guardados"
+      }
+    },
+    {
+      "key": "bandeja de entrada",
+      "attributes": {
+        "type": "graph-node",
+        "label": "bandeja de entrada"
+      }
+    },
+    {
+      "key": "files-agent",
+      "attributes": {
+        "type": "graph-node",
+        "label": "files-agent"
+      }
+    },
+    {
+      "key": "reportes",
+      "attributes": {
+        "type": "graph-node",
+        "label": "reportes"
+      }
+    },
+    {
+      "key": "sandbox",
+      "attributes": {
+        "type": "graph-node",
+        "label": "sandbox"
+      }
+    },
+    {
+      "key": "/reportes/incidentes.txt",
+      "attributes": {
+        "type": "graph-node",
+        "label": "/reportes/incidentes.txt"
+      }
+    },
+    {
+      "key": "/reportes/kpis-q1.txt",
+      "attributes": {
+        "type": "graph-node",
+        "label": "/reportes/kpis-q1.txt"
+      }
+    },
+    {
+      "key": "/reportes/resumen-mayo.txt",
+      "attributes": {
+        "type": "graph-node",
+        "label": "/reportes/resumen-mayo.txt"
+      }
+    },
+    {
+      "key": "/docs/onboarding.md",
+      "attributes": {
+        "type": "graph-node",
+        "label": "/docs/onboarding.md"
+      }
+    },
+    {
+      "key": "/chiste_para_manana.txt",
+      "attributes": {
+        "type": "graph-node",
+        "label": "/chiste_para_manana.txt"
+      }
+    },
+    {
+      "key": "Reunión de equipo - Jueves",
+      "attributes": {
+        "type": "graph-node",
+        "label": "Reunión de equipo - Jueves"
+      }
+    },
+    {
+      "key": "Alerta: Servidor caído",
+      "attributes": {
+        "type": "graph-node",
+        "label": "Alerta: Servidor caído"
+      }
+    },
+    {
+      "key": "Consulta sobre propuesta",
+      "attributes": {
+        "type": "graph-node",
+        "label": "Consulta sobre propuesta"
+      }
+    },
+    {
+      "key": "No leído",
+      "attributes": {
+        "type": "graph-node",
+        "label": "No leído"
+      }
+    },
+    {
+      "key": "Leído",
+      "attributes": {
+        "type": "graph-node",
+        "label": "Leído"
+      }
+    },
+    {
+      "key": "correo",
+      "attributes": {
+        "type": "graph-node",
+        "label": "correo"
+      }
+    },
+    {
+      "key": "Destinatario(s)",
+      "attributes": {
+        "type": "graph-node",
+        "label": "Destinatario(s)"
+      }
+    },
+    {
+      "key": "Asunto",
+      "attributes": {
+        "type": "graph-node",
+        "label": "Asunto"
+      }
+    },
+    {
+      "key": "Mensaje o idea principal",
+      "attributes": {
+        "type": "graph-node",
+        "label": "Mensaje o idea principal"
+      }
+    },
+    {
+      "key": "formal",
+      "attributes": {
+        "type": "graph-node",
+        "label": "formal"
+      }
+    },
+    {
+      "key": "neutral",
+      "attributes": {
+        "type": "graph-node",
+        "label": "neutral"
+      }
+    },
+    {
+      "key": "cercano",
+      "attributes": {
+        "type": "graph-node",
+        "label": "cercano"
+      }
+    },
+    {
+      "key": "borrador_correo.txt",
+      "attributes": {
+        "type": "graph-node",
+        "label": "borrador_correo.txt"
+      }
+    },
+    {
+      "key": "María García",
+      "attributes": {
+        "type": "graph-node",
+        "label": "María García"
+      }
+    },
+    {
+      "key": "Carlos Mora",
+      "attributes": {
+        "type": "graph-node",
+        "label": "Carlos Mora"
+      }
+    },
+    {
+      "key": "+56987654321",
+      "attributes": {
+        "type": "graph-node",
+        "label": "+56987654321"
+      }
+    },
+    {
+      "key": "+56911223344",
+      "attributes": {
+        "type": "graph-node",
+        "label": "+56911223344"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "communication-agent",
+      "target": "communication-agent",
+      "attributes": {
+        "relation": "performed_by",
+        "timestamp": "2026-06-08T18:49:32.512Z"
+      }
+    },
+    {
+      "source": "WhatsApp",
+      "target": "communication-agent",
+      "attributes": {
+        "relation": "sent_to",
+        "timestamp": "2026-06-08T18:49:32.514Z"
+      }
+    },
+    {
+      "source": "+56912345678",
+      "target": "communication-agent",
+      "attributes": {
+        "relation": "sent_to",
+        "timestamp": "2026-06-08T18:49:32.516Z"
+      }
+    },
+    {
+      "source": "Alertas de Teams",
+      "target": "communication-agent",
+      "attributes": {
+        "relation": "message_content",
+        "timestamp": "2026-06-08T18:49:32.517Z"
+      }
+    },
+    {
+      "source": "Juan Pérez",
+      "target": "communication-agent",
+      "attributes": {
+        "relation": "recipient",
+        "timestamp": "2026-06-08T18:49:32.518Z"
+      }
+    },
+    {
+      "source": "maria.garcia@empresa.com",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "contact",
+        "timestamp": "2026-06-08T18:49:59.940Z"
+      }
+    },
+    {
+      "source": "sistemas@empresa.com",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "contact",
+        "timestamp": "2026-06-08T18:49:59.945Z"
+      }
+    },
+    {
+      "source": "juan.perez@cliente.com",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "contact",
+        "timestamp": "2026-06-08T18:49:59.947Z"
+      }
+    },
+    {
+      "source": "libreta de direcciones/agenda de contactos guardados",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "restricted_access",
+        "timestamp": "2026-06-08T18:49:59.948Z"
+      }
+    },
+    {
+      "source": "bandeja de entrada",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "source",
+        "timestamp": "2026-06-08T18:49:59.949Z"
+      }
+    },
+    {
+      "source": "files-agent",
+      "target": "files-agent",
+      "attributes": {
+        "relation": "performed_by",
+        "timestamp": "2026-06-08T18:50:02.529Z"
+      }
+    },
+    {
+      "source": "reportes",
+      "target": "files-agent",
+      "attributes": {
+        "relation": "searched_in",
+        "timestamp": "2026-06-08T18:50:02.542Z"
+      }
+    },
+    {
+      "source": "sandbox",
+      "target": "files-agent",
+      "attributes": {
+        "relation": "searched_in",
+        "timestamp": "2026-06-08T18:50:02.557Z"
+      }
+    },
+    {
+      "source": "/reportes/incidentes.txt",
+      "target": "files-agent",
+      "attributes": {
+        "relation": "found",
+        "timestamp": "2026-06-08T18:50:02.566Z"
+      }
+    },
+    {
+      "source": "/reportes/kpis-q1.txt",
+      "target": "files-agent",
+      "attributes": {
+        "relation": "found",
+        "timestamp": "2026-06-08T18:50:02.573Z"
+      }
+    },
+    {
+      "source": "/reportes/resumen-mayo.txt",
+      "target": "files-agent",
+      "attributes": {
+        "relation": "found",
+        "timestamp": "2026-06-08T18:50:02.574Z"
+      }
+    },
+    {
+      "source": "/docs/onboarding.md",
+      "target": "files-agent",
+      "attributes": {
+        "relation": "found",
+        "timestamp": "2026-06-08T18:50:02.575Z"
+      }
+    },
+    {
+      "source": "/chiste_para_manana.txt",
+      "target": "files-agent",
+      "attributes": {
+        "relation": "found",
+        "timestamp": "2026-06-08T18:50:02.577Z"
+      }
+    },
+    {
+      "source": "email-agent",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "used_by",
+        "timestamp": "2026-06-08T18:50:35.718Z"
+      }
+    },
+    {
+      "source": "Reunión de equipo - Jueves",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "subject",
+        "timestamp": "2026-06-08T18:50:35.724Z"
+      }
+    },
+    {
+      "source": "Alerta: Servidor caído",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "subject",
+        "timestamp": "2026-06-08T18:50:35.726Z"
+      }
+    },
+    {
+      "source": "Consulta sobre propuesta",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "subject",
+        "timestamp": "2026-06-08T18:50:35.727Z"
+      }
+    },
+    {
+      "source": "No leído",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "status",
+        "timestamp": "2026-06-08T18:50:35.728Z"
+      }
+    },
+    {
+      "source": "Leído",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "status",
+        "timestamp": "2026-06-08T18:50:35.730Z"
+      }
+    },
+    {
+      "source": "correo",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "task",
+        "timestamp": "2026-06-08T18:51:22.264Z"
+      }
+    },
+    {
+      "source": "Destinatario(s)",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "required",
+        "timestamp": "2026-06-08T18:51:22.267Z"
+      }
+    },
+    {
+      "source": "Asunto",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "required",
+        "timestamp": "2026-06-08T18:51:22.268Z"
+      }
+    },
+    {
+      "source": "Mensaje o idea principal",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "required",
+        "timestamp": "2026-06-08T18:51:22.271Z"
+      }
+    },
+    {
+      "source": "formal",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "tone_option",
+        "timestamp": "2026-06-08T18:51:22.272Z"
+      }
+    },
+    {
+      "source": "neutral",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "tone_option",
+        "timestamp": "2026-06-08T18:51:22.272Z"
+      }
+    },
+    {
+      "source": "cercano",
+      "target": "email-agent",
+      "attributes": {
+        "relation": "tone_option",
+        "timestamp": "2026-06-08T18:51:22.273Z"
+      }
+    },
+    {
+      "source": "borrador_correo.txt",
+      "target": "files-agent",
+      "attributes": {
+        "relation": "created",
+        "timestamp": "2026-06-08T18:51:23.561Z"
+      }
+    },
+    {
+      "source": "correo",
+      "target": "files-agent",
+      "attributes": {
+        "relation": "purpose",
+        "timestamp": "2026-06-08T18:51:23.562Z"
+      }
+    },
+    {
+      "source": "María García",
+      "target": "communication-agent",
+      "attributes": {
+        "relation": "contact",
+        "timestamp": "2026-06-08T18:54:10.677Z"
+      }
+    },
+    {
+      "source": "Carlos Mora",
+      "target": "communication-agent",
+      "attributes": {
+        "relation": "contact",
+        "timestamp": "2026-06-08T18:54:10.680Z"
+      }
+    },
+    {
+      "source": "+56987654321",
+      "target": "communication-agent",
+      "attributes": {
+        "relation": "contact",
+        "timestamp": "2026-06-08T18:54:10.682Z"
+      }
+    },
+    {
+      "source": "+56911223344",
+      "target": "communication-agent",
+      "attributes": {
+        "relation": "contact",
+        "timestamp": "2026-06-08T18:54:10.684Z"
+      }
+    }
+  ]
+}

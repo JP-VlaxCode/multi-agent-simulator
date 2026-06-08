@@ -1,0 +1,37 @@
+{
+  "name": "simulator-agent",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run frontend\"",
+    "server": "tsx src/server.ts",
+    "cli": "tsx src/cli.ts",
+    "frontend": "cd frontend && npm run dev",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@ai-sdk/azure": "^3.0.70",
+    "@azure-rest/ai-inference": "latest",
+    "@azure/core-auth": "latest",
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@strands-agents/sdk": "^1.4.0",
+    "ai": "^6.0.197",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "graphology": "^0.26.0",
+    "graphology-types": "^0.24.7",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.1.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.15.21",
+    "@types/uuid": "^10.0.0",
+    "concurrently": "^9.1.2",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}
