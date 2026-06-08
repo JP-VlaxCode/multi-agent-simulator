@@ -8,6 +8,7 @@ export default defineConfig({
     proxy: {
       '/task': 'http://localhost:3010',
       '/health': 'http://localhost:3010',
+      '/agents': 'http://localhost:3010',
       '/memory': 'http://localhost:3010',
       '/memory/graph-data': 'http://localhost:3010',
     },

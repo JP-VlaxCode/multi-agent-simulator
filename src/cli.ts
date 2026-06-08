@@ -6,34 +6,23 @@ import { LongTermMemory } from './memory/long-term.memory.js'
 import { GraphMemory } from './memory/graph.memory.js'
 import { CustomMemory } from './memory/custom.memory.js'
 import { CompositeMemory } from './memory/composite.memory.js'
+import { AgentRegistry } from './agents/agent-registry.js'
 import { OrchestratorAgent } from './agents/orchestrator.agent.js'
-import { EmailAgent } from './agents/email.agent.js'
-import { CommunicationAgent } from './agents/communication.agent.js'
-import { FilesAgent } from './agents/files.agent.js'
-import { DocumentationAgent } from './agents/documentation.agent.js'
 import type { BusMessage } from './types/index.js'
 
 const bus = new InMemoryBus()
 
 const memory = new CompositeMemory({
   shortTerm: new ShortTermMemory(50),
-  longTerm: new LongTermMemory(),
-  graph: new GraphMemory(),
-  custom: new CustomMemory(),
+  longTerm:  new LongTermMemory(),
+  graph:     new GraphMemory(),
+  custom:    new CustomMemory(),
 })
 
-const orchestrator = new OrchestratorAgent(bus)
-const emailAgent = new EmailAgent(bus, memory)
-const commAgent = new CommunicationAgent(bus, memory)
-const filesAgent = new FilesAgent(bus, memory)
-const docAgent = new DocumentationAgent(bus)
+const registry     = new AgentRegistry(bus, memory)
+const orchestrator = new OrchestratorAgent(bus, registry)
 
-await Promise.all([
-  emailAgent.start(),
-  commAgent.start(),
-  filesAgent.start(),
-  docAgent.start(),
-])
+await registry.startAll()
 
 // Show bus events in terminal
 bus.subscribe('broadcast', (msg: BusMessage) => {
@@ -45,14 +34,18 @@ bus.subscribe('broadcast', (msg: BusMessage) => {
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
 
 console.log('\n=== Multi-Agent Simulator ===')
-console.log('Agentes disponibles: email, comunicaciones, archivos, documentación')
-console.log('Escribe tu tarea y presiona Enter. Escribe "salir" para terminar.\n')
+console.log(`Agentes activos: ${registry.getStatus().filter(a => a.running).map(a => a.label).join(', ')}`)
+console.log('Escribe tu tarea. "agentes" para ver estado. "salir" para terminar.\n')
 
 function prompt(): void {
   rl.question('> ', async (input) => {
     const task = input.trim()
     if (!task) { prompt(); return }
     if (task === 'salir' || task === 'exit') { rl.close(); process.exit(0) }
+    if (task === 'agentes') {
+      registry.getStatus().forEach(a => console.log(`  ${a.running ? '●' : '○'} ${a.label} (${a.id})`))
+      prompt(); return
+    }
 
     console.log('\n[Procesando...]\n')
     try {
