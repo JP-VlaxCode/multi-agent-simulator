@@ -1,4 +1,0 @@
-Incidentes Mayo 2026
-
-1. PRD-02 caída (2h) — resuelto
-2. Lentitud base de datos (30min) — resuelto
