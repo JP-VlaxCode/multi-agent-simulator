@@ -42,19 +42,31 @@ export class CompositeMemory implements IMemory {
       const strategy = this.strategies.get(options.type)
       return strategy ? strategy.retrieve(query, options) : []
     }
-    // query all strategies in parallel
-    const results = await Promise.all(
-      this.all.map((s) => s.retrieve(query, options).catch(() => [] as MemoryEntry[]))
+    // query all strategies in parallel with weight-based ranking
+    const weightedResults = await Promise.all(
+      this.all.map(async (s, idx) => {
+        const results = await s.retrieve(query, options).catch(() => [] as MemoryEntry[])
+        // Weight: long-term (semantic/embeddings) > graph > short-term > custom
+        const weights = [0.7, 1.0, 0.8, 0.5] // shortTerm, longTerm, graph, custom
+        const weight = weights[idx] ?? 0.5
+        return results.map((entry, rank) => ({
+          entry,
+          // Score: higher weight + higher position = better
+          score: weight * (1 - rank / Math.max(results.length, 1)),
+        }))
+      })
     )
-    const flat = results.flat()
-    // deduplicate by id, limit to k
+    const flat = weightedResults.flat()
+    // deduplicate by id, sort by score, limit to k
     const seen = new Set<string>()
-    const deduped = flat.filter((e) => {
-      if (seen.has(e.id)) return false
-      seen.add(e.id)
-      return true
-    })
-    return deduped.slice(0, options?.k ?? 10)
+    const deduped = flat
+      .sort((a, b) => b.score - a.score)
+      .filter((item) => {
+        if (seen.has(item.entry.id)) return false
+        seen.add(item.entry.id)
+        return true
+      })
+    return deduped.slice(0, options?.k ?? 10).map((item) => item.entry)
   }
 
   async forget(id: string): Promise<void> {

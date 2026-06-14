@@ -1,27 +1,22 @@
 import { generateText, tool, stepCountIs } from 'ai'
-import { createAzure } from '@ai-sdk/azure'
 import { z } from 'zod'
 import { v4 as uuidv4 } from 'uuid'
 import type { IBus } from '../bus/bus.interface.js'
 import type { BusMessage, AgentId } from '../types/index.js'
-
-const SYSTEM = `Eres el agente orquestador de un sistema multi-agente.
-Tienes acceso a los siguientes agentes especialistas:
-- email_agent: gestión de emails (leer bandeja, buscar, enviar)
-- communication_agent: mensajería Teams y WhatsApp
-- files_agent: operaciones de archivos en sandbox (leer, escribir, listar)
-- documentation_agent: auditoría, documentos y reportes de sesión
-
-Analiza la tarea del usuario y decide qué agentes deben intervenir.
-Puedes llamar múltiples agentes cuando la tarea lo requiera.
-Una vez que tengas todos los resultados, sintetiza una respuesta final clara y en español.`
-
-type AgentTarget = 'email-agent' | 'communication-agent' | 'files-agent' | 'documentation-agent'
+import type { AgentRegistry } from './agent-registry.js'
+import { getOrchestratorModel, llmCircuitBreaker } from './model.factory.js'
+import { withRetry } from '../utils/retry.js'
+import { metrics } from '../utils/metrics.js'
+import { childLogger } from '../config/logger.js'
 
 export class OrchestratorAgent {
   private pendingTasks = new Map<string, (result: string) => void>()
+  private readonly log = childLogger({ component: 'orchestrator' })
 
-  constructor(private readonly bus: IBus) {
+  constructor(
+    private readonly bus: IBus,
+    private readonly registry: AgentRegistry,
+  ) {
     this.bus.subscribe('orchestrator', (msg: BusMessage) => {
       if ((msg.type === 'RESULT' || msg.type === 'ERROR') && msg.correlationId) {
         const resolver = this.pendingTasks.get(msg.correlationId)
@@ -34,70 +29,84 @@ export class OrchestratorAgent {
     })
   }
 
-  private async sendTask(target: AgentTarget, task: string): Promise<string> {
+  private async sendTask(targetId: string, task: string): Promise<string> {
     const msgId = uuidv4()
+    const timeoutMs = this.registry.getTimeoutMs(targetId)
+    this.log.debug({ targetId, msgId, timeoutMs, task: task.slice(0, 100) }, 'Delegating task')
+
     const promise = new Promise<string>((resolve) => {
       this.pendingTasks.set(msgId, resolve)
       setTimeout(() => {
         if (this.pendingTasks.has(msgId)) {
           this.pendingTasks.delete(msgId)
+          this.log.warn({ targetId, msgId, timeoutMs }, 'Agent timeout')
           resolve('[Timeout] El agente no respondió a tiempo.')
         }
-      }, 120_000)
+      }, timeoutMs)
     })
 
     this.bus.publish({
-      id: msgId,
-      from: 'orchestrator',
-      to: target as AgentId,
-      type: 'TASK',
-      payload: task,
-      timestamp: new Date().toISOString(),
+      id: msgId, from: 'orchestrator', to: targetId as AgentId,
+      type: 'TASK', payload: task, timestamp: new Date().toISOString(),
     })
 
     return promise
   }
 
   async runTask(userInput: string): Promise<string> {
-    const azureProvider = createAzure({
-      baseURL: process.env.AZURE_OPENAI_ENDPOINT!,
-      apiKey: process.env.AZURE_OPENAI_API_KEY!,
-      apiVersion: process.env.AZURE_API_VERSION ?? '2024-04-01-preview',
-      useDeploymentBasedUrls: true,
-    })
-    const model = azureProvider.chat(process.env.AZURE_OPENAI_DEPLOYMENT ?? 'gpt-5.4-mini')
+    const correlationId = uuidv4()
+    const log = this.log.child({ correlationId, input: userInput.slice(0, 80) })
+    const startTime = Date.now()
+    log.info('Task received')
 
+    const model = getOrchestratorModel()
+
+    // Build tools dynamically from currently active agents
+    const activeAgents = this.registry.getActiveDescriptions()
     const taskSchema = z.object({ task: z.string() })
 
-    const { text } = await generateText({
-      model,
-      system: SYSTEM,
-      prompt: userInput,
-      stopWhen: stepCountIs(10),
-      tools: {
-        email_agent: tool({
-          description: 'Delega una tarea al agente de emails (leer inbox, buscar, enviar emails)',
+    const tools = Object.fromEntries(
+      activeAgents.map(({ id, description }) => [
+        id.replace(/-/g, '_'),
+        tool({
+          description,
           inputSchema: taskSchema,
-          execute: ({ task }: { task: string }) => this.sendTask('email-agent', task),
+          execute: ({ task }: { task: string }) => this.sendTask(id, task),
         }),
-        communication_agent: tool({
-          description: 'Delega una tarea al agente de comunicaciones (Teams channels y WhatsApp)',
-          inputSchema: taskSchema,
-          execute: ({ task }: { task: string }) => this.sendTask('communication-agent', task),
-        }),
-        files_agent: tool({
-          description: 'Delega una tarea al agente de archivos (listar, leer, escribir archivos en sandbox)',
-          inputSchema: taskSchema,
-          execute: ({ task }: { task: string }) => this.sendTask('files-agent', task),
-        }),
-        documentation_agent: tool({
-          description: 'Delega una tarea al agente de documentación (audit trail, reportes, consultas de docs)',
-          inputSchema: taskSchema,
-          execute: ({ task }: { task: string }) => this.sendTask('documentation-agent', task),
-        }),
-      },
-    })
+      ])
+    )
 
+    const agentList = activeAgents
+      .map(a => `- ${a.id.replace(/-/g, '_')}: ${a.description}`)
+      .join('\n')
+
+    const system = `Eres el agente orquestador de un sistema multi-agente.
+Agentes disponibles ahora mismo:
+${agentList}
+
+Analiza la tarea del usuario y delega a los agentes correctos.
+Para incidencias residenciales: llama inspection_agent + resident_agent en paralelo, luego decision_agent con ambos resultados.
+Sintetiza una respuesta final clara en español.`
+
+    // Use circuit breaker + retry for LLM call
+    const { text } = await llmCircuitBreaker.execute(() =>
+      withRetry(
+        () => generateText({ model, system, prompt: userInput, stopWhen: stepCountIs(15), tools }),
+        {
+          maxAttempts: 3,
+          baseDelay: 2000,
+          label: 'orchestrator-generateText',
+          nonRetriable: (err) => {
+            const msg = String(err)
+            return msg.includes('400') || msg.includes('content_filter')
+          },
+        },
+      )
+    )
+
+    const latency = Date.now() - startTime
+    metrics.recordTaskCompleted('orchestrator', latency, text.length)
+    log.info({ resultLength: text.length, latency }, 'Task completed')
     return text
   }
 }

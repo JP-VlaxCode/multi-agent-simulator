@@ -21,6 +21,10 @@ export class InMemoryBus extends EventEmitter implements IBus {
     this.on(agentId, handler)
   }
 
+  unsubscribeHandler(agentId: AgentId | 'broadcast', handler: (msg: BusMessage) => void): void {
+    this.removeListener(agentId, handler)
+  }
+
   unsubscribe(agentId: AgentId | 'broadcast'): void {
     this.removeAllListeners(agentId)
   }

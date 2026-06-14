@@ -7,22 +7,27 @@ import { getEmbedding, cosineSimilarity } from './embeddings.js'
 
 export class LongTermMemory implements IMemory {
   private entries: MemoryEntry[] = []
-  private loaded = false
+  private loadPromise: Promise<void> | null = null
 
-  constructor(private readonly storePath: string = './data/long-term.json') {}
+  constructor(
+    private readonly storePath: string = './data/long-term.json',
+    private readonly maxEntries: number = 500,
+  ) {}
 
   private async load(): Promise<void> {
-    if (this.loaded) return
-    try {
-      await mkdir('./data', { recursive: true })
-      if (existsSync(this.storePath)) {
-        const raw = await readFile(this.storePath, 'utf-8')
-        this.entries = JSON.parse(raw) as MemoryEntry[]
+    if (this.loadPromise) return this.loadPromise
+    this.loadPromise = (async () => {
+      try {
+        await mkdir('./data', { recursive: true })
+        if (existsSync(this.storePath)) {
+          const raw = await readFile(this.storePath, 'utf-8')
+          this.entries = JSON.parse(raw) as MemoryEntry[]
+        }
+      } catch {
+        this.entries = []
       }
-    } catch {
-      this.entries = []
-    }
-    this.loaded = true
+    })()
+    return this.loadPromise
   }
 
   private async persist(): Promise<void> {
@@ -45,6 +50,10 @@ export class LongTermMemory implements IMemory {
       embedding,
     }
     this.entries.push(full)
+    // Evict oldest entries if over limit
+    if (this.entries.length > this.maxEntries) {
+      this.entries = this.entries.slice(-this.maxEntries)
+    }
     await this.persist()
     return full
   }

@@ -9,10 +9,12 @@ interface Props {
 }
 
 const EXAMPLES = [
+  'El vecino del depto 305 dejó basura en el pasillo — ¿qué resolución corresponde?',
+  'El vecino del depto 502 hizo ruido excesivo a las 02:00 — evalúa y decide',
+  'Incidencia: depto 101 tiene mascotas sueltas en la piscina sin correa',
+  'Revisa si el vecino del depto 205 es reincidente y decide sobre su último incidente de ruido',
   'Lee mi bandeja de entrada',
   'Resume /reportes y envía email con el resumen',
-  'Envía WhatsApp a +56912345678 con alertas de Teams',
-  'Genera reporte de auditoría de esta sesión',
 ]
 
 export function TaskInput({ onSubmit, loading, collapsed, onToggleCollapse, hasResult }: Props) {

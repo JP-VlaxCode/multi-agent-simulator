@@ -6,22 +6,24 @@ import type { IMemory } from './memory.interface.js'
 
 export class CustomMemory implements IMemory {
   private preferences: MemoryEntry[] = []
-  private loaded = false
+  private loadPromise: Promise<void> | null = null
 
   constructor(private readonly storePath: string = './data/preferences.json') {}
 
   private async load(): Promise<void> {
-    if (this.loaded) return
-    try {
-      await mkdir('./data', { recursive: true })
-      if (existsSync(this.storePath)) {
-        const raw = await readFile(this.storePath, 'utf-8')
-        this.preferences = JSON.parse(raw) as MemoryEntry[]
+    if (this.loadPromise) return this.loadPromise
+    this.loadPromise = (async () => {
+      try {
+        await mkdir('./data', { recursive: true })
+        if (existsSync(this.storePath)) {
+          const raw = await readFile(this.storePath, 'utf-8')
+          this.preferences = JSON.parse(raw) as MemoryEntry[]
+        }
+      } catch {
+        this.preferences = []
       }
-    } catch {
-      this.preferences = []
-    }
-    this.loaded = true
+    })()
+    return this.loadPromise
   }
 
   private async persist(): Promise<void> {

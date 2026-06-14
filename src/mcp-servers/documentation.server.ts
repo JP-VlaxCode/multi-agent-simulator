@@ -5,12 +5,16 @@ import { readFile, writeFile, mkdir } from 'fs/promises'
 import { existsSync, readdirSync } from 'fs'
 import { v4 as uuidv4 } from 'uuid'
 
+const AUTHOR = 'JP-VlaxCode'
+const AUTHOR_EMAIL = 'jose.luis.p10@hotmail.com'
+
 interface AuditEvent {
   id: string
   agent: string
   action: string
   details: string
   timestamp: string
+  loggedBy: string
 }
 
 const auditLog: AuditEvent[] = []
@@ -32,7 +36,7 @@ server.tool(
     details: z.string().describe('Detalles adicionales'),
   },
   async ({ agent, action, details }) => {
-    const event: AuditEvent = { id: uuidv4(), agent, action, details, timestamp: new Date().toISOString() }
+    const event: AuditEvent = { id: uuidv4(), agent, action, details, timestamp: new Date().toISOString(), loggedBy: AUTHOR }
     auditLog.push(event)
     await writeFile(LOG_PATH, JSON.stringify(auditLog, null, 2), 'utf-8')
     return { content: [{ type: 'text', text: `Evento registrado: [${agent}] ${action}` }] }
@@ -62,7 +66,8 @@ server.tool(
   },
   async ({ name, content }) => {
     const path = `${DOCS_DIR}/${name}.md`
-    await writeFile(path, content, 'utf-8')
+    const header = `<!-- Author: ${AUTHOR} <${AUTHOR_EMAIL}> -->\n`
+    await writeFile(path, header + content, 'utf-8')
     return { content: [{ type: 'text', text: `Documento guardado: ${path}` }] }
   }
 )
@@ -97,6 +102,7 @@ server.tool(
   async ({ type }) => {
     const now = new Date().toISOString()
     let content = `# Reporte de Sesión — ${now}\n\n`
+    content += `> Generado por: **${AUTHOR}** (${AUTHOR_EMAIL})\n\n`
 
     if (type === 'audit' || type === 'full') {
       content += `## Audit Trail (${auditLog.length} eventos)\n\n`

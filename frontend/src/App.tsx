@@ -74,7 +74,36 @@ const AGENTS: AgentDef[] = [
     mcpServers: [{ name: 'documentation.server.ts', label: 'documentation-simulator' }],
     tools: ['log_event', 'get_audit_trail', 'save_doc', 'query_docs', 'generate_report'],
   },
+  {
+    id: 'inspection-agent',
+    label: 'Inspection',
+    role: 'infractions',
+    color: '#F87171',
+    description: 'Revisa el reglamento de copropiedad y determina si una incidencia constituye infracción formal, indicando código, monto y base legal.',
+    mcpServers: [{ name: 'regulations.server.ts', label: 'regulations-simulator' }],
+    tools: ['list_violation_types', 'check_violation', 'get_fine_amount'],
+  },
+  {
+    id: 'resident-agent',
+    label: 'Resident',
+    role: 'history',
+    color: '#FB923C',
+    description: 'Consulta el historial de incidencias de residentes y determina si son reincidentes. Accede a la base de datos de vecinos.',
+    mcpServers: [{ name: 'residents.server.ts', label: 'residents-simulator' }],
+    tools: ['get_resident_history', 'find_resident_by_name', 'list_residents', 'register_incident'],
+  },
+  {
+    id: 'decision-agent',
+    label: 'Decision',
+    role: 'resolution',
+    color: '#34D399',
+    description: 'Emite la resolución final sobre una incidencia: Multa, Advertencia Formal o Desestimado. Registra la decisión en el sistema.',
+    mcpServers: [{ name: 'residents.server.ts', label: 'residents-simulator' }],
+    tools: ['register_incident', 'get_resident_history'],
+  },
 ]
+
+interface AgentStatus { id: string; label: string; running: boolean; enabled: boolean; description: string }
 
 export default function App() {
   const [events, setEvents] = useState<BusEvent[]>([])
@@ -86,10 +115,29 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'events' | 'memory'>('events')
   const [memoryKey, setMemoryKey] = useState(0)
   const [commandCollapsed, setCommandCollapsed] = useState(false)
+  const [agentStatuses, setAgentStatuses] = useState<AgentStatus[]>([])
+  const [toggling, setToggling] = useState<string | null>(null)
   const socketRef = useRef<Socket | null>(null)
   const streamRef = useRef<HTMLDivElement>(null)
 
+  const fetchStatuses = async () => {
+    try {
+      const res = await fetch('/agents')
+      if (res.ok) setAgentStatuses(await res.json() as AgentStatus[])
+    } catch { /* ignore */ }
+  }
+
+  const toggleAgent = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setToggling(id)
+    try {
+      await fetch(`/agents/${id}/toggle`, { method: 'POST' })
+      await fetchStatuses()
+    } finally { setToggling(null) }
+  }
+
   useEffect(() => {
+    void fetchStatuses()
     const socket = io('http://localhost:3010')
     socketRef.current = socket
     socket.on('connect', () => {})
@@ -101,6 +149,7 @@ export default function App() {
         setActiveAgents(prev => { const s = new Set(prev); s.delete(msg.from); return s })
       }, 800)
     })
+    socket.on('agent:status', (statuses: AgentStatus[]) => setAgentStatuses(statuses))
     return () => { socket.disconnect() }
   }, [])
 
@@ -132,7 +181,7 @@ export default function App() {
     }
   }
 
-  const toggleAgent = (a: AgentDef) =>
+  const selectAgent = (a: AgentDef) =>
     setSelectedAgent(prev => prev?.id === a.id ? null : a)
 
   return (
@@ -160,33 +209,42 @@ export default function App() {
         {/* Agent roster */}
         <aside className="agent-panel">
           <div className="panel-label">Agents</div>
-          {AGENTS.map(a => (
-            <div
-              key={a.id}
-              className={`agent-item ${activeAgents.has(a.id) ? 'active' : ''} ${selectedAgent?.id === a.id ? 'selected' : ''}`}
-              onClick={() => toggleAgent(a)}
-            >
-              <span
-                className={`agent-node ${activeAgents.has(a.id) ? 'pulsing' : ''}`}
-                style={{ background: a.color, color: a.color }}
-              />
-              <div>
-                <div className="agent-name">{a.label}</div>
-                <div className="agent-role">{a.role}</div>
+          {AGENTS.map(a => {
+            const status = agentStatuses.find(s => s.id === a.id)
+            const isRunning = status?.running ?? true
+            const isToggling = toggling === a.id
+            return (
+              <div
+                key={a.id}
+                className={`agent-item ${activeAgents.has(a.id) ? 'active' : ''} ${selectedAgent?.id === a.id ? 'selected' : ''} ${!isRunning ? 'stopped' : ''}`}
+                onClick={() => selectAgent(a)}
+              >
+                <span
+                  className={`agent-node ${activeAgents.has(a.id) ? 'pulsing' : ''}`}
+                  style={{ background: isRunning ? a.color : 'var(--text-muted)', color: a.color }}
+                />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="agent-name">{a.label}</div>
+                  <div className="agent-role">{a.role}</div>
+                </div>
+                <button
+                  className={`agent-toggle-btn ${isRunning ? 'running' : 'stopped'}`}
+                  onClick={(e) => toggleAgent(a.id, e)}
+                  disabled={isToggling}
+                  title={isRunning ? 'Detener agente' : 'Iniciar agente'}
+                >
+                  {isToggling ? '…' : isRunning ? '■' : '▶'}
+                </button>
               </div>
-              <span className="agent-chevron">{selectedAgent?.id === a.id ? '‹' : '›'}</span>
-            </div>
-          ))}
+            )
+          })}
         </aside>
 
         {/* Agent detail panel */}
         {selectedAgent && (
           <div className="detail-panel" key={selectedAgent.id}>
             <div className="detail-header">
-              <span
-                className="detail-dot"
-                style={{ background: selectedAgent.color }}
-              />
+              <span className="detail-dot" style={{ background: selectedAgent.color }} />
               <span className="detail-title">{selectedAgent.label} Agent</span>
               <button className="detail-close" onClick={() => setSelectedAgent(null)}>✕</button>
             </div>

@@ -1,6 +1,7 @@
 {
   "name": "simulator-agent-ui",
   "version": "1.0.0",
+  "author": "JP-VlaxCode <jose.luis.p10@hotmail.com>",
   "type": "module",
   "scripts": {
     "dev": "vite",

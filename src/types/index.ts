@@ -4,6 +4,9 @@ export type AgentId =
   | 'communication-agent'
   | 'files-agent'
   | 'documentation-agent'
+  | 'inspection-agent'
+  | 'resident-agent'
+  | 'decision-agent'
   | 'broadcast'
 
 export type MessageType = 'TASK' | 'RESULT' | 'ERROR' | 'LOG'
@@ -32,5 +35,9 @@ export interface MemoryEntry {
 export interface RetrieveOptions {
   k?: number
   type?: MemoryType
-  filter?: Record<string, unknown>
+  filter?: {
+    agentId?: string
+    since?: string
+    [key: string]: unknown
+  }
 }

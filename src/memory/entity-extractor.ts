@@ -52,7 +52,7 @@ export async function extractEntities(
 
     const { text } = await generateText({
       model,
-      maxTokens: 400,
+      maxOutputTokens: 400,
       prompt: `Extrae entidades de esta interacción de agente y devuelve SOLO un array JSON válido, sin texto adicional ni bloques de código.
 
 Agente: ${agentId}

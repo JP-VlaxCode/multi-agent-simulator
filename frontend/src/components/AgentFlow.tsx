@@ -9,6 +9,9 @@ const AGENT_COLORS: Record<string, string> = {
   'communication-agent': 'var(--c-comm)',
   'files-agent':         'var(--c-files)',
   'documentation-agent': 'var(--c-docs)',
+  'inspection-agent':    '#F87171',
+  'resident-agent':      '#FB923C',
+  'decision-agent':      '#34D399',
   broadcast:             'var(--c-default)',
 }
 
@@ -18,6 +21,9 @@ const AGENT_LABELS: Record<string, string> = {
   'communication-agent': 'COMM',
   'files-agent':         'FILES',
   'documentation-agent': 'DOCS',
+  'inspection-agent':    'INSP',
+  'resident-agent':      'RESID',
+  'decision-agent':      'DECIS',
   broadcast:             'ALL',
 }
 
